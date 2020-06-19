@@ -18,12 +18,12 @@ public class HashMapOwnImp {
 
     public HashMapOwnImp(int k) {
         this.k = k;
-        bucketSize = getSimpleNumber(bucketSize, k);
+        bucketSize = getInterdpaNumber(bucketSize, k);
         buckets = new Item[bucketSize];
     }
 
 
-    public int simpleCheck(int a, int b) {
+    public int interspacesNumberCheck(int a, int b) {
         while (b != 0) {
             int tmp = a % b;
             a = b;
@@ -32,12 +32,12 @@ public class HashMapOwnImp {
         return a;
     }
 
-    public int getSimpleNumber(int a, int b) {
+    public int getInterdpaNumber(int a, int b) {
         if (b >= a) {
             a = b + 1;
         }
         while (true) {
-            if (simpleCheck(a, b) != 1) {
+            if (interspacesNumberCheck(a, b) != 1) {
                 a += b;
             } else
                 return a;
