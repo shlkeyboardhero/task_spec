@@ -9,7 +9,7 @@ public class HashMapOwnImp2 {
     int k;
     int bucketSize = 23; //изначально размер - простое число
 
-    private Item[] buckets = new Item[bucketSize];
+    private Item[] buckets;
 
     public HashMapOwnImp2() {
         this.k = K;
