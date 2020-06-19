@@ -13,7 +13,7 @@ public class Main {
         test.put("five", 5);
         test.put("six",6);
         test.put("seven",7);
-        test.put("eght",8);
+        test.put("eight",8);
         test.put("nine", 9);
         test.put("ten",10);
         System.out.println(test.getKeys());
