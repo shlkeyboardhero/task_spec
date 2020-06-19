@@ -3,121 +3,170 @@ package com.company;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyHashMap {
-    int k=3;
-    int N=7;
-    private Item[] buckets = new Item[N];
-    public MyHashMap(int k){
-        this.k=k;
-    }
-    public  MyHashMap(){
-        this.k=1;
-    }
 
+public class HashMapOwnImp {
+    static final int K = 1;   //шаг по умолчанию
+    int k;
+    int bucketSize = 23; //изначально размер - простое число
 
+    private Item[] buckets = new Item[bucketSize];
 
-
-    private int index(Item selectedItem,int o){
-        return index(selectedItem.key,o);
+    public HashMapOwnImp() {
+        this.k = K;
+        buckets = new Item[bucketSize];
     }
 
-    private int index(String key,int o){
-        return (key.hashCode()+o*k)%N;
+    public HashMapOwnImp(int k) {
+        this.k = k;
+        bucketSize = getSimpleNumber(bucketSize, k);
+        buckets = new Item[bucketSize];
     }
 
-    public void put(String key, int value){
-        int i;
-        Item newItem = new Item(key,value);
-            for (i = 0; i < N; i++) {
-                int p=index(newItem,i);
-                if (buckets[p] == null) {
-                    buckets[p] = newItem;
+
+    public int simpleCheck(int a, int b) {
+        while (b != 0) {
+            int tmp = a % b;
+            a = b;
+            b = tmp;
+        }
+        return a;
+    }
+
+    public int getSimpleNumber(int a, int b) {
+        if (b >= a) {
+            a = b + 1;
+        }
+        while (true) {
+            if (simpleCheck(a, b) != 1) {
+                a += b;
+            } else
+                return a;
+        }
+    }
+
+
+    private int index(Item selectedItem, int itr) {
+
+        return index(selectedItem.key, itr);
+    }
+
+    private int index(String key, int itr) {
+
+        return (key.hashCode() + itr * k) % bucketSize;
+    }
+
+    public void put(String key, int value) {
+        Item newItem = new Item(key, value);
+        if (insertItem(newItem) >= bucketSize) {
+            bucketSize += k;
+            buckets = move2NewBuckets();
+            for (int r = 0; r < bucketSize; r++) {
+                int newItemIndex = index(newItem, r);
+                if (buckets[newItemIndex] == null) {
+                    buckets[newItemIndex] = newItem;
                     break;
-                } else {
-                    if (buckets[p].key.equals(key)) {
-                        buckets[p] = newItem;
-                        break;
-                    }
                 }
             }
-            if(i>=N){
-                N+=k;
-                int r;
-                int q;
-                Item trashBuckets[] = new Item[N];
-                for (q=0;q<buckets.length;q++) {
-                    if(buckets[q] != null){
-                        for (r = 0; r < N; r ++) {
-                            int m=index(buckets[q],r);
-                            if (trashBuckets[m] == null) {
-                                trashBuckets[m] = buckets[q];
-                                break;
-                            }
-                        }
-                    }
-
-                }
-                buckets=trashBuckets;
-                for (r = 0; r < N; r ++) {
-                    int m=index(newItem,r);
-                    if (buckets[m] == null) {
-                        buckets[m] = newItem;
-                        break;
-                    }
-                }
         }
 
     }
 
-    public void del(String key){
-        int trashIndex;
-        int w;
-        for (w=0; w<N; w++){
-            trashIndex=index(key,w);
-            if (key.equals(buckets[trashIndex].key)) {
-                buckets[trashIndex] = null;
+    private Item[] move2NewBuckets() {
+        int currentIndex;
+        Item newBuckets[] = new Item[bucketSize];
+        for (int q = 0; q < buckets.length; q++) {
+            if (buckets[q] != null) {
+                for (int r = 0; r < bucketSize; r++) {
+                    currentIndex = index(buckets[q], r);
+                    if (newBuckets[currentIndex] == null) {
+                        newBuckets[currentIndex] = buckets[q];
+                        break;
+                    }
+                }
+            }
+
+        }
+        return newBuckets;
+    }
+
+    private int insertItem(Item newItem) {
+        int counter;
+        int currentIndex;
+        for (counter = 0; counter < bucketSize; counter++) {
+            currentIndex = index(newItem, counter);
+            if (buckets[currentIndex] == null) {
+                buckets[currentIndex] = newItem;
+                break;
+            } else {
+                if (buckets[currentIndex].key.equals(newItem.key)) {
+                    buckets[currentIndex] = newItem;
+                    break;
+                }
+            }
+        }
+        return counter;
+    }
+
+    public void del(String key) {
+        int nextIndex;
+        for (int itr = 0; itr < bucketSize; itr++) {
+            nextIndex = index(key, itr);
+            if (key.equals(buckets[nextIndex].key)) {
+                buckets[nextIndex] = shiftItem(itr + 1, key);
                 break;
             }
+
         }
+    }
+
+    private Item shiftItem(int itr, String key) {
+        Item tempItem;
+        int nextIndex = index(key, itr);
+        if (itr >= bucketSize || buckets[nextIndex] == null) {
+            return null;
+        } else if (buckets[nextIndex].key.hashCode() == key.hashCode()) {
+            tempItem = buckets[nextIndex];
+            buckets[nextIndex] = shiftItem(itr + 1, key);
+            return tempItem;
+        } else
+            return shiftItem(itr + 1, key);
     }
 
     public Integer get(String key) {
-        int trashIndex;
-        int w;
-        for (w=0; w<N; w++){
-            trashIndex=index(key,w);
-            if (key.equals(buckets[trashIndex].key)) {
-               return buckets[trashIndex].value;
+        int currentIndex;
+        for (int itr = 0; itr < bucketSize; itr++) {
+            currentIndex = index(key, itr);
+            if (key.equals(buckets[currentIndex].key)) {
+                return buckets[currentIndex].value;
             }
         }
         return null;
     }
 
     public int size() {
-        return N;
+        return bucketSize;
     }
 
-    public List<String> getKeys(){
-        int t;
+    public List<String> getKeys() {
 
         ArrayList<String> keysValue = new ArrayList<String>();
-        for (t=0;t<N;t++){
-            if(buckets[t] != null){
-                keysValue.add(buckets[t].key);
+        for (int counter = 0; counter < bucketSize; counter++) {
+            if (buckets[counter] != null) {
+                keysValue.add(buckets[counter].key);
             }
         }
         return keysValue;
     }
 
-    public List<Integer> getValues(){
-        int t;
+    public List<Integer> getValues() {
 
         ArrayList<Integer> valuesValue = new ArrayList<Integer>();
-        for (t=0;t<N;t++){
-            if(buckets[t] != null){
-                valuesValue.add(buckets[t].value);
+        for (int counter = 0; counter < bucketSize; counter++) {
+            if (buckets[counter] != null) {
+                valuesValue.add(buckets[counter].value);
             }
         }
         return valuesValue;
     }
 }
+
