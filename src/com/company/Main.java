@@ -1,11 +1,9 @@
 package com.company;
 
-import java.util.HashMap;
-
 public class Main {
 
     public static void main(String[] args) {
-        MyHashMap test = new MyHashMap();
+        HashMapOwnImp2 test = new HashMapOwnImp2(3);
         test.put("one", 1);
         test.put("two",2);
         test.put("tree",3);
@@ -13,7 +11,7 @@ public class Main {
         test.put("five", 5);
         test.put("six",6);
         test.put("seven",7);
-        test.put("eight",8);
+        test.put("eght",8);
         test.put("nine", 9);
         test.put("ten",10);
         System.out.println(test.getKeys());
