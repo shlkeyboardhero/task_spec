@@ -48,14 +48,14 @@ public class HashMap {
     }
 
 
-    private int computeIndexViaItem(Item selectedItem, int tryPlaceItemToTable) {
+    private int computeIndexViaItem(Item selectedItem, int attemptedPlacement) {
 
-        return computeIndexViaKey(selectedItem.key, tryPlaceItemToTable);
+        return computeIndexViaKey(selectedItem.key, attemptedPlacement);
     }
 
-    private int computeIndexViaKey(String key, int tryPlaceItemToTable) {
+    private int computeIndexViaKey(String key, int attemptedPlacement) {
 
-        return (key.hashCode() + tryPlaceItemToTable * probingStep) % bucketSize;
+        return (key.hashCode() + attemptedPlacement * probingStep) % bucketSize;
     }
 
     public void putNewItem(String key, int value) {
@@ -78,12 +78,12 @@ public class HashMap {
     private Item[] moveToNewBuckets() {
         int currentIndex;
         Item newBuckets[] = new Item[bucketSize];
-        for (int k = 0; k < buckets.length; k++) {
-            if (buckets[k] != null) {
-                for (int j = 0; j < bucketSize; j++) {
-                    currentIndex = computeIndexViaItem(buckets[k], j);
+        for (int j = 0; j < buckets.length; j++) {
+            if (buckets[j] != null) {
+                for (int k = 0; k < bucketSize; k++) {
+                    currentIndex = computeIndexViaItem(buckets[j], k);
                     if (newBuckets[currentIndex] == null) {
-                        newBuckets[currentIndex] = buckets[k];
+                        newBuckets[currentIndex] = buckets[j];
                         break;
                     }
                 }
@@ -113,8 +113,8 @@ public class HashMap {
 
     public void delItem(String key) {
         int nextIndex;
-        for (int tryPlaceItemToTable = 0; tryPlaceItemToTable < bucketSize; tryPlaceItemToTable++) {
-            nextIndex = computeIndexViaKey(key, tryPlaceItemToTable);
+        for (int i = 0; i < bucketSize; i++) {
+            nextIndex = computeIndexViaKey(key, i);
             if (key.equals(buckets[nextIndex].key)) {
                 buckets[nextIndex].deleted = true;
                 break;
@@ -126,8 +126,8 @@ public class HashMap {
 
     public Integer getValue(String key) {
         int currentIndex;
-        for (int tryPlaceItemToTable = 0; tryPlaceItemToTable < bucketSize; tryPlaceItemToTable++) {
-            currentIndex = computeIndexViaKey(key, tryPlaceItemToTable);
+        for (int i = 0; i < bucketSize; i++) {
+            currentIndex = computeIndexViaKey(key, i);
             if (!buckets[currentIndex].deleted && key.equals(buckets[currentIndex].key)) {
                 return buckets[currentIndex].value;
             }
