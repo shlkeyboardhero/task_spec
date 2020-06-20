@@ -3,7 +3,7 @@ package com.company;
 public class Main {
 
     public static void main(String[] args) {
-        HashMapOwnImp2 test = new HashMapOwnImp2(3);
+        HashMap test = new HashMap(3);
         test.put("one", 1);
         test.put("two",2);
         test.put("tree",3);
