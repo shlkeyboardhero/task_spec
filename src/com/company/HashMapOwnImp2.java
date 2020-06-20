@@ -4,40 +4,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HashMapOwnImp2 {
-    static final int K = 1;   //шаг по умолчанию
-    int k;
+public class HashMapSecondOwnImp {
+    //static final int Step = 1;   //шаг по умолчанию
+    int step;
     int bucketSize = 23; //изначально размер - простое число
 
     private Item[] buckets;
 
-    public HashMapOwnImp2() {
-        this.k = K;
+    /*public HashMapSecondOwnImp() { //конструктор по умолчанию
+        this.step = Step;
+        buckets = new Item[bucketSize];
+    }*/
+
+    public HashMapSecondOwnImp(int step) { // конструктор с параметром
+        this.step = step;
+        bucketSize = getCoprimeNumber(bucketSize, step);
         buckets = new Item[bucketSize];
     }
 
-    public HashMapOwnImp2(int k) {
-        this.k = k;
-        bucketSize = getInterdpaNumber(bucketSize, k);
-        buckets = new Item[bucketSize];
-    }
 
-
-    public int interspacesNumberCheck(int bucketSize, int k) {
-        while (k != 0) {
-            int tmp = bucketSize % k;
-            bucketSize = k;
-            k = tmp;
+    public boolean coprimeNumberCheck(int a, int b) {
+        while (b != 0) {
+            int tmp = a % b;
+            a = b;
+            b = tmp;
         }
-        return bucketSize;
+        if (a == 1)
+            return true;
+        else
+            return false;
     }
 
-    public int getInterdpaNumber(int bucketSize, int k) {
+    public int getCoprimeNumber(int bucketSize, int k) {
         if (k >= bucketSize) {
             bucketSize = k + 1;
         }
         while (true) {
-            if (interspacesNumberCheck(bucketSize, k) != 1) {
+            if (!coprimeNumberCheck(bucketSize, k)) {
                 bucketSize += k;
             } else
                 return bucketSize;
@@ -52,16 +55,16 @@ public class HashMapOwnImp2 {
 
     private int index(String key, int i) { // i исходя из ((hash(x) + ik) mod N) @Wiki
 
-        return (key.hashCode() + i * k) % bucketSize;
+        return (key.hashCode() + i * step) % bucketSize;
     }
 
     public void put(String key, int value) {
         Item newItem = new Item(key, value);
         if (insertItem(newItem) >= bucketSize) {
-            bucketSize += k;
+            bucketSize += step;
             buckets = move2NewBuckets();
-            for (int counter_1 = 0; counter_1 < bucketSize; counter_1++) {
-                int newItemIndex = index(newItem, counter_1);
+            for (int j = 0; j < bucketSize; j++) {
+                int newItemIndex = index(newItem, j);
                 if (buckets[newItemIndex] == null || buckets[newItemIndex].deleted) {
                     buckets[newItemIndex] = newItem;
                     break;
@@ -75,12 +78,12 @@ public class HashMapOwnImp2 {
     private Item[] move2NewBuckets() {
         int currentIndex;
         Item newBuckets[] = new Item[bucketSize];
-        for (int counter_2 = 0; counter_2 < buckets.length; counter_2++) {
-            if (buckets[counter_2] != null) {
-                for (int counter_1 = 0; counter_1 < bucketSize; counter_1++) {
-                    currentIndex = index(buckets[counter_2], counter_1);
+        for (int k = 0; k < buckets.length; k++) {
+            if (buckets[k] != null) {
+                for (int j = 0; j < bucketSize; j++) {
+                    currentIndex = index(buckets[k], j);
                     if (newBuckets[currentIndex] == null) {
-                        newBuckets[currentIndex] = buckets[counter_2];
+                        newBuckets[currentIndex] = buckets[k];
                         break;
                     }
                 }
@@ -91,10 +94,10 @@ public class HashMapOwnImp2 {
     }
 
     private int insertItem(Item newItem) {
-        int counter;
+        int j;
         int currentIndex;
-        for (counter = 0; counter < bucketSize; counter++) {
-            currentIndex = index(newItem, counter);
+        for (j = 0; j < bucketSize; j++) {
+            currentIndex = index(newItem, j);
             if (buckets[currentIndex] == null || buckets[currentIndex].deleted) {
                 buckets[currentIndex] = newItem;
                 break;
@@ -105,7 +108,7 @@ public class HashMapOwnImp2 {
                 }
             }
         }
-        return counter;
+        return j;
     }
 
     public void del(String key) {
@@ -121,12 +124,11 @@ public class HashMapOwnImp2 {
     }
 
 
-
     public Integer get(String key) {
         int currentIndex;
         for (int i = 0; i < bucketSize; i++) { // i исходя из ((hash(x) + ik) mod N) @Wiki
             currentIndex = index(key, i);
-            if (key.equals(buckets[currentIndex].key)) {
+            if (!buckets[currentIndex].deleted && key.equals(buckets[currentIndex].key)) {
                 return buckets[currentIndex].value;
             }
         }
@@ -140,9 +142,9 @@ public class HashMapOwnImp2 {
     public List<String> getKeys() {
 
         ArrayList<String> keysValue = new ArrayList<String>();
-        for (int counter = 0; counter < bucketSize; counter++) {
-            if (buckets[counter] != null && !buckets[counter].deleted) {
-                keysValue.add(buckets[counter].key);
+        for (int j = 0; j < bucketSize; j++) {
+            if (buckets[j] != null && !buckets[j].deleted) {
+                keysValue.add(buckets[j].key);
             }
         }
         return keysValue;
@@ -151,9 +153,9 @@ public class HashMapOwnImp2 {
     public List<Integer> getValues() {
 
         ArrayList<Integer> valuesValue = new ArrayList<Integer>();
-        for (int counter = 0; counter < bucketSize; counter++) {
-            if (buckets[counter] != null && !buckets[counter].deleted) {
-                valuesValue.add(buckets[counter].value);
+        for (int j = 0; j < bucketSize; j++) {
+            if (buckets[j] != null && !buckets[j].deleted) {
+                valuesValue.add(buckets[j].value);
             }
         }
         return valuesValue;
