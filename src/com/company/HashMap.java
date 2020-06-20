@@ -5,16 +5,12 @@ import java.util.List;
 
 
 public class HashMap {
-    //static final int Step = 1;
+
     int probingStep;
     int bucketSize = 23;
 
     private Item[] buckets;
 
-    /*public HashMapSecondOwnImp() {
-        this.step = Step;
-        buckets = new Item[bucketSize];
-    }*/
 
     public HashMap(int probingStep) {
         this.probingStep = probingStep;
