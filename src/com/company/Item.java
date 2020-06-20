@@ -5,8 +5,8 @@ public class Item {
     int value;
     boolean deleted = false;
 
-    public Item(String key, int value1) {
+    public Item(String key, int value) {
         this.key = key;
-        this.value = value1;
+        this.value = value;
     }
 }
